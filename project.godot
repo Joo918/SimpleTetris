@@ -11,8 +11,15 @@ config_version=5
 [application]
 
 config/name="SimpleTetris"
+run/main_scene="res://GameScene.tscn"
 config/features=PackedStringArray("4.2", "GL Compatibility")
 config/icon="res://icon.svg"
+
+[autoload]
+
+Map="*res://Scripts/Map.gd"
+TetrinoGenerator="*res://Scripts/TetrinoGenerator.gd"
+GameScene="*res://GameScene.tscn"
 
 [dotnet]
 

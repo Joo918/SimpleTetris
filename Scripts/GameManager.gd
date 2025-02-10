@@ -2,28 +2,80 @@ extends Node
 
 var currentActiveTetrino:Tetrino = null
 
+var deltas:float = 0
+const tickTime:float = 0.5 #tick is every 0.5 sec
+
+var curHorizontalInput:int = 0
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass # Replace with function body.
 
+func _input(event):
+	if event.is_action_pressed('ui_left'):
+		curHorizontalInput -= 1
+	elif event.is_action_released('ui_left'):
+		curHorizontalInput += 1
+	if event.is_action_pressed('ui_right'):
+		curHorizontalInput += 1
+	elif event.is_action_released('ui_right'):
+		curHorizontalInput -= 1	
 
 #jooyoung
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	deltas += delta
+	if (deltas >= tickTime):
+		deltas -= tickTime
+		progressTick()
 	#detect if input was made, and queue it to process in next tick
 	pass
 
 #jooyoung
 # Updates position/rotation of current Tetrino per input, detect completed lines and erase them, update score
 func progressTick():
+	
+	if (Map.didTetrinoHitBottom(currentActiveTetrino)):
+		mergeCurrentTetrinoToMap()
+		detectCompletedLinesAndErase()
+	
+	#rotate tetrino
+	#move tetrino horizontally
+	#move tetrino vertically
+	moveCurrentTetrinoOneStep()
+	
+	Map.drawMap()
+	Map.drawTetrino(currentActiveTetrino)
+	
 	pass
 
 
 #Jooyoung
 #delete completed lines and shift all others down (need to move from bottom to top)
 func detectCompletedLinesAndErase():
+	for i in range(Map.HEIGHT - 1, -1, -1):
+		var deletedAtLeastOneLine = true
+		while deletedAtLeastOneLine:
+			var cur = Map.mapGrid[i]
+			var cnt = 0
+			for j in Map.WIDTH:
+				if cur[j]:
+					cnt += 1
+			if cnt == Map.WIDTH:
+				shiftDownFromAbove(i)
+			else:
+				deletedAtLeastOneLine = false
 	pass
 	
+#recursively shift down map
+func shiftDownFromAbove(idx:int):
+	var cur = Map.mapGrid[idx]
+	var above = Map.mapGrid[idx-1 if idx != 0 else 0]
+	for i in Map.WIDTH:
+		cur[i] = above[i] if idx != 0 else false
+	if (idx != 0):
+		shiftDownFromAbove(idx - 1)
+	pass
 
 #Ryan
 func moveCurrentTetrinoOneStep():
@@ -32,4 +84,9 @@ func moveCurrentTetrinoOneStep():
 #jooyoung
 # merge the current tetrino's geometry to the map
 func mergeCurrentTetrinoToMap():
+	if (currentActiveTetrino == null):
+		return
+	for cur:Vector2i in currentActiveTetrino.geometry:
+		var position = currentActiveTetrino.center + cur
+		Map.mapGrid[position.y][position.x] = true
 	pass

@@ -71,7 +71,7 @@ func drawSquareAt(x:int, y:int):
 	editedPoly.append(Vector2(x * blockSize, (y+1) * blockSize))
 	polygon.polygon = editedPoly
 	
-	print("polygon size = " + str(polygon.polygon.size()))
+	#print("polygon size = " + str(polygon.polygon.size()))
 	
 	var arr = PackedInt32Array()
 	for i in 4:

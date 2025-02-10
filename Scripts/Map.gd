@@ -41,8 +41,12 @@ func didTetrinoHitBottom(tetrino:Tetrino)->bool:
 
 #jooyoung
 func drawMap():
-	polygon.polygon.clear()
-	polygon.polygons.clear()
+	var edit1 = polygon.polygon
+	var edit2 = polygon.polygons
+	edit1.clear()
+	edit2.clear()
+	polygon.polygon = edit1
+	polygon.polygons = edit2
 	for i in HEIGHT:
 		for j in WIDTH:
 			if mapGrid[i][j]:

@@ -15,7 +15,7 @@ func rotateCW():
 	var count := 0
 	var newGeometry := []
 	for tile in geometry:
-		newGeometry.append(Vector2(tile.x, tile.y).rotated(PI/4).round())
+		newGeometry.append(Vector2(tile.x, tile.y).rotated(PI/2).round())
 	for i in geometry.size():
 		geometry[i] = Vector2i(newGeometry[i].x, newGeometry[i].y)
 		

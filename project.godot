@@ -19,7 +19,6 @@ config/icon="res://icon.svg"
 
 Map="*res://Scripts/Map.gd"
 TetrinoGenerator="*res://Scripts/TetrinoGenerator.gd"
-GameScene="*res://GameScene.tscn"
 
 [dotnet]
 

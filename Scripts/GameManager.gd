@@ -1,3 +1,4 @@
+class_name GameScene
 extends Node
 
 var currentActiveTetrino:Tetrino = null
@@ -10,6 +11,7 @@ var curHorizontalInput:int = 0
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	currentActiveTetrino = TetrinoGenerator.generateRandomTetrino()
+	pass
 
 func _input(event):
 	#if event.is_action_pressed('ui_left'):
@@ -88,11 +90,13 @@ func moveCurrentTetrinoOneStepVertical():
 	
 func moveCurrentTetrinoOneStepHorizontal(value):
 	currentActiveTetrino.center += Vector2i(value, 0)
+	Map.drawMap()
 	Map.drawTetrino(currentActiveTetrino)
 	Map.printCurrentMapWithTetrino(currentActiveTetrino)
 	
 func rotateCurrentActiveTetrino():
 	currentActiveTetrino.rotateCW()
+	Map.drawMap()
 	Map.drawTetrino(currentActiveTetrino)
 	Map.printCurrentMapWithTetrino(currentActiveTetrino)
 	
@@ -104,4 +108,6 @@ func mergeCurrentTetrinoToMap():
 	for cur:Vector2i in currentActiveTetrino.geometry:
 		var position = currentActiveTetrino.center + cur
 		Map.mapGrid[position.y][position.x] = true
+	currentActiveTetrino.queue_free()
+	currentActiveTetrino = null
 	pass

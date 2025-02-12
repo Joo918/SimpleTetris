@@ -43,6 +43,7 @@ func populateTetrinoShapesList():
 		tetrinoShapesArray.append(tetrino)
 
 func generateRandomTetrino()->Tetrino:
+	print("generate new tetrino!")
 	var tetrino := Tetrino.new()
 	tetrinoindex = RNG.randi_range(0, (tetrinoShapesArray.size() - 1))
 	#tetrinoindex = 3

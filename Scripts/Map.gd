@@ -39,6 +39,7 @@ func testTetrinos():
 
 #Ryan
 func didTetrinoHitBottom(tetrino:Tetrino)->bool:
+	
 	for tile in tetrino.geometry:
 		if (tetrino.center.y + tile.y) >= (HEIGHT - 1):
 			return true
@@ -63,7 +64,6 @@ func drawMap():
 func drawTetrino(tetrino:Tetrino):
 	if tetrino == null:
 		return
-	polygon.polygon = []
 	for cur:Vector2i in tetrino.geometry:
 		var position = tetrino.center + cur
 		drawSquareAt(position.x, position.y)

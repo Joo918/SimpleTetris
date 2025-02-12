@@ -9,17 +9,23 @@ var curHorizontalInput:int = 0
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
+	currentActiveTetrino = TetrinoGenerator.generateRandomTetrino()
 
 func _input(event):
+	#if event.is_action_pressed('ui_left'):
+		#curHorizontalInput -= 1
+	#elif event.is_action_released('ui_left'):
+		#curHorizontalInput += 1
+	#if event.is_action_pressed('ui_right'):
+		#curHorizontalInput += 1
+	#elif event.is_action_released('ui_right'):
+		#curHorizontalInput -= 1	
 	if event.is_action_pressed('ui_left'):
-		curHorizontalInput -= 1
-	elif event.is_action_released('ui_left'):
-		curHorizontalInput += 1
+		moveCurrentTetrinoOneStepHorizontal(-1)
 	if event.is_action_pressed('ui_right'):
-		curHorizontalInput += 1
-	elif event.is_action_released('ui_right'):
-		curHorizontalInput -= 1	
+		moveCurrentTetrinoOneStepHorizontal(1)
+	if event.is_action_pressed('ui_accept'):
+		rotateCurrentActiveTetrino()
 
 #jooyoung
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -38,15 +44,14 @@ func progressTick():
 	if (Map.didTetrinoHitBottom(currentActiveTetrino)):
 		mergeCurrentTetrinoToMap()
 		detectCompletedLinesAndErase()
-	
-	#rotate tetrino
-	#move tetrino horizontally
+		currentActiveTetrino = TetrinoGenerator.generateRandomTetrino()
+
 	#move tetrino vertically
-	moveCurrentTetrinoOneStep()
+	moveCurrentTetrinoOneStepVertical()
 	
 	Map.drawMap()
 	Map.drawTetrino(currentActiveTetrino)
-	
+	Map.printCurrentMapWithTetrino(currentActiveTetrino)
 	pass
 
 
@@ -78,9 +83,19 @@ func shiftDownFromAbove(idx:int):
 	pass
 
 #Ryan
-func moveCurrentTetrinoOneStep():
-	pass
-
+func moveCurrentTetrinoOneStepVertical():
+	currentActiveTetrino.center += Vector2i(0, 1)
+	
+func moveCurrentTetrinoOneStepHorizontal(value):
+	currentActiveTetrino.center += Vector2i(value, 0)
+	Map.drawTetrino(currentActiveTetrino)
+	Map.printCurrentMapWithTetrino(currentActiveTetrino)
+	
+func rotateCurrentActiveTetrino():
+	currentActiveTetrino.rotateCW()
+	Map.drawTetrino(currentActiveTetrino)
+	Map.printCurrentMapWithTetrino(currentActiveTetrino)
+	
 #jooyoung
 # merge the current tetrino's geometry to the map
 func mergeCurrentTetrinoToMap():

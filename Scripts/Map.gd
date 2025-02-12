@@ -33,11 +33,18 @@ func testMap():
 		mapGrid[13][i] = true
 		mapGrid[0][i] = true
 	drawMap()
+	
+func testTetrinos():
+	pass
 
 #Ryan
 func didTetrinoHitBottom(tetrino:Tetrino)->bool:
-	return true
-	pass
+	for tile in tetrino.geometry:
+		if (tetrino.center.y + tile.y) >= (HEIGHT - 1):
+			return true
+		print(tetrino.center.y + tile.y)
+	return false
+	
 
 #jooyoung
 func drawMap():
@@ -56,6 +63,7 @@ func drawMap():
 func drawTetrino(tetrino:Tetrino):
 	if tetrino == null:
 		return
+	polygon.polygon = []
 	for cur:Vector2i in tetrino.geometry:
 		var position = tetrino.center + cur
 		drawSquareAt(position.x, position.y)
@@ -84,4 +92,20 @@ func drawSquareAt(x:int, y:int):
 #ryan
 #print [ ] for empty locations, print [x] for filled-in locations, print [o] for tetrino tiles
 func printCurrentMapWithTetrino(tetrino:Tetrino):
-	pass
+	var tetrinotilecoord := []
+	for tetrinotile in tetrino.geometry:
+		tetrinotilecoord.append(tetrino.center + tetrinotile)
+	for i in HEIGHT:
+		var tilerowstring := ""
+		for j in WIDTH:
+			var tile = mapGrid[i][j]
+			if tetrinotilecoord.has(Vector2i(j, i)):
+				tilerowstring += "[o]"
+			else:
+				if tile:
+					tilerowstring += "[x]"
+				else:
+					tilerowstring += "[ ]"
+		print(tilerowstring)
+	print("")
+	

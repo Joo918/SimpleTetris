@@ -11,6 +11,7 @@ func rotateCCW():
 
 #Ryan
 #rotate current piece from the center in CCW direction	
+#TODO: wall-kicking
 func rotateCW():
 	var count := 0
 	var newGeometry := []
@@ -19,7 +20,18 @@ func rotateCW():
 	for i in geometry.size():
 		geometry[i] = Vector2i(newGeometry[i].x, newGeometry[i].y)
 		
-		
+#Jooyoung
+#check if rotation is not hitting any 
+func isCurrentGeometryValid()->bool:
+	return true
+	pass
+
+#Jooyoung
+#shift the piece to make geometry valid
+func resolveInvalidGeometry():
+	pass
+	
+
 func printGeometry():
 	print(center)
 	print(geometry)

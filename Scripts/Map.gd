@@ -38,6 +38,7 @@ func testTetrinos():
 	pass
 
 #Ryan
+#returns TRUE IFF the tetrino's geometry bottom is hitting the map's geometry
 func didTetrinoHitBottom(tetrino:Tetrino)->bool:
 	
 	for tile in tetrino.geometry:
@@ -61,11 +62,12 @@ func drawMap():
 				drawSquareAt(j, i)
 	pass
 
-func drawTetrino(tetrino:Tetrino):
+#TODO: implement offset so we can use it for UI stuff (previews, keep-space)
+func drawTetrino(tetrino:Tetrino, offset:Vector2i=Vector2i(0,0)):
 	if tetrino == null:
 		return
 	for cur:Vector2i in tetrino.geometry:
-		var position = tetrino.center + cur
+		var position = tetrino.center + cur + offset
 		drawSquareAt(position.x, position.y)
 	pass
 
@@ -109,3 +111,12 @@ func printCurrentMapWithTetrino(tetrino:Tetrino):
 		print(tilerowstring)
 	print("")
 	
+#Ryan
+#draw the 3 tetrinos in preview next to map
+func drawPreviewTetrinos():
+	pass
+
+#Ryan
+#draws number of lines cleared
+func drawCurrentScore(score:int):
+	pass

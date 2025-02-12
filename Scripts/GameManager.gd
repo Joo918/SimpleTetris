@@ -13,6 +13,8 @@ func _ready():
 	currentActiveTetrino = TetrinoGenerator.generateRandomTetrino()
 	pass
 
+#Jooyoung
+#TODO: make tetrino fall faster when pressing down
 func _input(event):
 	#if event.is_action_pressed('ui_left'):
 		#curHorizontalInput -= 1
@@ -111,3 +113,16 @@ func mergeCurrentTetrinoToMap():
 	currentActiveTetrino.queue_free()
 	currentActiveTetrino = null
 	pass
+
+#Jooyoung
+#slam current tetrino to ground
+func tetrinoButtThump():
+	pass
+
+#store current tetrino in a keep-space
+#if there was on tetrino in the keep-space, use that as current piece,
+#if not, get next piece from the generator
+#Jooyoung
+func keepPiece():
+	pass
+

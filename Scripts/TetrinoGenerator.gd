@@ -50,3 +50,16 @@ func generateRandomTetrino()->Tetrino:
 	tetrino.geometry = tetrinoShapesList[tetrinoShapesArray[tetrinoindex]]
 	tetrino.center = Vector2i(5,2)
 	return tetrino
+
+#Ryan
+#get tetrinos for preview
+func getNext3Tetrinos()->Array[Tetrino]:
+	return []
+	pass
+	
+#Ryan
+#give next Tetrino in queue
+#add one more generated Tetrino to queue
+func takeNextTetrino()->Tetrino:
+	return null
+	pass

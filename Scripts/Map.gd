@@ -5,6 +5,7 @@ const HEIGHT:int = 20
 const WIDTH:int = 10
 
 const blockSize:int = 25
+const holdLocation:Vector2i = Vector2i(12,5)
 
 var polygon:Polygon2D = null
 

@@ -2,11 +2,15 @@ class_name GameScene
 extends Node
 
 var currentActiveTetrino:Tetrino = null
+var heldTetrino:Tetrino = null
 
 var deltas:float = 0
-const tickTime:float = 0.5 #tick is every 0.5 sec
+var tickTime:float = 0.5 #tick is every 0.5 sec
 
 var curHorizontalInput:int = 0
+var pressedDown:bool = false
+
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -30,6 +34,14 @@ func _input(event):
 		moveCurrentTetrinoOneStepHorizontal(1)
 	if event.is_action_pressed('ui_accept'):
 		rotateCurrentActiveTetrino()
+	if event.is_action_pressed("ui_down"):
+		tickTime = 0.25
+	elif event.is_action_released('ui_down'):
+		tickTime = 0.5
+	if event.is_action_pressed('holdAction'):
+		keepPiece()
+	if event.is_action_pressed('slam'):
+		tetrinoButtThump()
 
 #jooyoung
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -52,10 +64,12 @@ func progressTick():
 
 	#move tetrino vertically
 	moveCurrentTetrinoOneStepVertical()
+	if (pressedDown):
+		moveCurrentTetrinoOneStepVertical()
 	
-	Map.drawMap()
-	Map.drawTetrino(currentActiveTetrino)
-	Map.printCurrentMapWithTetrino(currentActiveTetrino)
+	
+	render()
+	#Map.printCurrentMapWithTetrino(currentActiveTetrino)
 	pass
 
 
@@ -88,19 +102,29 @@ func shiftDownFromAbove(idx:int):
 
 #Ryan
 func moveCurrentTetrinoOneStepVertical():
-	currentActiveTetrino.center += Vector2i(0, 1)
+	if currentActiveTetrino == null:
+		return
+	if currentActiveTetrino.isCurrentMoveValid(Tetrino.TetrinoMoveType.DOWN):
+		currentActiveTetrino.center += Vector2i(0, 1)
 	
 func moveCurrentTetrinoOneStepHorizontal(value):
-	currentActiveTetrino.center += Vector2i(value, 0)
-	Map.drawMap()
-	Map.drawTetrino(currentActiveTetrino)
-	Map.printCurrentMapWithTetrino(currentActiveTetrino)
+	if currentActiveTetrino == null:
+		return
+	var l = value < 0
+	var horizontalValid = (l && currentActiveTetrino.isCurrentMoveValid(Tetrino.TetrinoMoveType.LEFT)) || (!l && currentActiveTetrino.isCurrentMoveValid(Tetrino.TetrinoMoveType.RIGHT))
+	if (horizontalValid):
+		currentActiveTetrino.center += Vector2i(value, 0)
+		render()
+		#Map.printCurrentMapWithTetrino(currentActiveTetrino)
 	
 func rotateCurrentActiveTetrino():
-	currentActiveTetrino.rotateCW()
-	Map.drawMap()
-	Map.drawTetrino(currentActiveTetrino)
-	Map.printCurrentMapWithTetrino(currentActiveTetrino)
+	if currentActiveTetrino == null:
+		return
+		
+	if (currentActiveTetrino.isCurrentMoveValid(Tetrino.TetrinoMoveType.R_CW)):
+		currentActiveTetrino.rotateCW()
+		render()
+		#Map.printCurrentMapWithTetrino(currentActiveTetrino)
 	
 #jooyoung
 # merge the current tetrino's geometry to the map
@@ -117,6 +141,11 @@ func mergeCurrentTetrinoToMap():
 #Jooyoung
 #slam current tetrino to ground
 func tetrinoButtThump():
+	if currentActiveTetrino == null:
+		return
+	while (!Map.didTetrinoHitBottom(currentActiveTetrino)):
+		moveCurrentTetrinoOneStepVertical()
+	render()
 	pass
 
 #store current tetrino in a keep-space
@@ -124,5 +153,21 @@ func tetrinoButtThump():
 #if not, get next piece from the generator
 #Jooyoung
 func keepPiece():
+	if (heldTetrino == null):
+		heldTetrino = currentActiveTetrino
+		currentActiveTetrino = TetrinoGenerator.generateRandomTetrino()
+		heldTetrino.center = Map.holdLocation
+	else:
+		var tmp = heldTetrino
+		heldTetrino = currentActiveTetrino
+		currentActiveTetrino = tmp
+		currentActiveTetrino.center = heldTetrino.center
+		heldTetrino.center = Map.holdLocation
+	render()
 	pass
 
+func render():
+	Map.drawMap()
+	Map.drawTetrino(currentActiveTetrino)
+	if heldTetrino != null:
+		Map.drawTetrino(heldTetrino)

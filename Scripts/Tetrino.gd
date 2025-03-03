@@ -22,16 +22,45 @@ func rotateCW():
 		
 #Jooyoung
 #check if rotation is not hitting any 
-func isCurrentGeometryValid()->bool:
+func isCurrentMoveValid(move: TetrinoMoveType)->bool:
+	var clone := self.clone()
+	match (move):
+		TetrinoMoveType.R_CW:
+			clone.rotateCW()
+			pass
+		TetrinoMoveType.R_CCW:
+			clone.rotationCCW()
+			pass
+		TetrinoMoveType.RIGHT:
+			clone.center += Vector2i.RIGHT
+			pass
+		TetrinoMoveType.LEFT:
+			clone.center += Vector2i.LEFT
+			pass
+		TetrinoMoveType.DOWN:
+			clone.center += Vector2i.UP
+			pass
+	var curMap := Map.mapGrid
+	clone.printGeometry()
+	for tile:Vector2i in clone.geometry:
+		var cur:Vector2i = clone.center + tile
+		if cur.x >= Map.WIDTH || cur.x < 0 || cur.y >= Map.HEIGHT || (cur.y >= 0 && curMap[cur.y][cur.x]):
+			return false
 	return true
 	pass
 
-#Jooyoung
-#shift the piece to make geometry valid
-func resolveInvalidGeometry():
-	pass
 	
 
 func printGeometry():
 	print(center)
 	print(geometry)
+
+func clone()->Tetrino:
+	var newTetrino = Tetrino.new()
+	
+	newTetrino.center = self.center
+	newTetrino.geometry = self.geometry.duplicate(true)
+	
+	return newTetrino
+
+enum TetrinoMoveType {R_CW, R_CCW, LEFT, RIGHT, DOWN}

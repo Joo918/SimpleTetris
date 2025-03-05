@@ -18,3 +18,13 @@ offset_right = 40.0
 offset_bottom = 23.0
 theme_override_font_sizes/font_size = 36
 text = "0"
+
+[node name="Label" type="Label" parent="."]
+offset_left = 965.0
+offset_top = 25.0
+offset_right = 1111.0
+offset_bottom = 126.0
+text = "z = HOLD PIECE
+x = SLAM DOWN
+space = ROTATE
+arrow keys = move"

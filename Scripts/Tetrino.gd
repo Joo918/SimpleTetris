@@ -3,6 +3,11 @@ extends Node
 
 var center:Vector2i
 var geometry #relative positions of the tiles forming the tetrino from the center.
+var color := Color.BLACK
+var polygon:Polygon2D = null
+
+func _ready():
+	pass
 
 #Ryan
 #rotate current piece from the center in CCW direction
@@ -11,7 +16,6 @@ func rotateCCW():
 
 #Ryan
 #rotate current piece from the center in CCW direction	
-#TODO: wall-kicking
 func rotateCW():
 	var count := 0
 	var newGeometry := []
@@ -41,15 +45,13 @@ func isCurrentMoveValid(move: TetrinoMoveType)->bool:
 			clone.center += Vector2i.UP
 			pass
 	var curMap := Map.mapGrid
-	clone.printGeometry()
+	#clone.printGeometry()
 	for tile:Vector2i in clone.geometry:
 		var cur:Vector2i = clone.center + tile
 		if cur.x >= Map.WIDTH || cur.x < 0 || cur.y >= Map.HEIGHT || (cur.y >= 0 && curMap[cur.y][cur.x]):
 			return false
 	return true
 	pass
-
-	
 
 func printGeometry():
 	print(center)

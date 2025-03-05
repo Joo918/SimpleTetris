@@ -1,8 +1,18 @@
 class_name GameScene
 extends Node
 
+@onready var backTexture := $BackgroundTexture
+@onready var scorelabel := $ScoreLabel
+
+@export var mapHeight := 20
+@export var mapWidth := 10
+@export var blockSize := 25
+
+var scoreAmount := 0
+
 var currentActiveTetrino:Tetrino = null
 var heldTetrino:Tetrino = null
+var dropPreviewTetrino:Tetrino = null
 
 var deltas:float = 0
 var tickTime:float = 0.5 #tick is every 0.5 sec
@@ -10,12 +20,18 @@ var tickTime:float = 0.5 #tick is every 0.5 sec
 var curHorizontalInput:int = 0
 var pressedDown:bool = false
 
-
-
 # Called when the node enters the scene tree for the first time.
+func _enter_tree():
+	Map.HEIGHT = mapHeight
+	Map.WIDTH = mapWidth
+	Map.blockSize = blockSize
+	
 func _ready():
-	currentActiveTetrino = TetrinoGenerator.generateRandomTetrino()
-	pass
+	currentActiveTetrino = TetrinoGenerator.takeNextTetrino()
+	dropPreviewTetrino = TetrinoGenerator.CloneDropTetrino(currentActiveTetrino)
+	backTexture.size = Vector2(Map.blockSize * Map.WIDTH, Map.blockSize * Map.HEIGHT)
+	scorelabel.position = Map.scoreLabelLocation * Map.blockSize
+	drawCurrentScore()
 
 #Jooyoung
 #TODO: make tetrino fall faster when pressing down
@@ -42,6 +58,8 @@ func _input(event):
 		keepPiece()
 	if event.is_action_pressed('slam'):
 		tetrinoButtThump()
+	if event.is_action_pressed('reset'):
+		pass
 
 #jooyoung
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -60,7 +78,9 @@ func progressTick():
 	if (Map.didTetrinoHitBottom(currentActiveTetrino)):
 		mergeCurrentTetrinoToMap()
 		detectCompletedLinesAndErase()
-		currentActiveTetrino = TetrinoGenerator.generateRandomTetrino()
+		currentActiveTetrino = TetrinoGenerator.takeNextTetrino()
+		dropPreviewTetrino.polygon.queue_free()
+		dropPreviewTetrino = TetrinoGenerator.CloneDropTetrino(currentActiveTetrino)
 
 	#move tetrino vertically
 	moveCurrentTetrinoOneStepVertical()
@@ -86,9 +106,9 @@ func detectCompletedLinesAndErase():
 					cnt += 1
 			if cnt == Map.WIDTH:
 				shiftDownFromAbove(i)
+				scoreAmount += 1
 			else:
 				deletedAtLeastOneLine = false
-	pass
 	
 #recursively shift down map
 func shiftDownFromAbove(idx:int):
@@ -98,7 +118,6 @@ func shiftDownFromAbove(idx:int):
 		cur[i] = above[i] if idx != 0 else false
 	if (idx != 0):
 		shiftDownFromAbove(idx - 1)
-	pass
 
 #Ryan
 func moveCurrentTetrinoOneStepVertical():
@@ -114,6 +133,7 @@ func moveCurrentTetrinoOneStepHorizontal(value):
 	var horizontalValid = (l && currentActiveTetrino.isCurrentMoveValid(Tetrino.TetrinoMoveType.LEFT)) || (!l && currentActiveTetrino.isCurrentMoveValid(Tetrino.TetrinoMoveType.RIGHT))
 	if (horizontalValid):
 		currentActiveTetrino.center += Vector2i(value, 0)
+		dropPreviewTetrino.center += Vector2i(value, 0)
 		render()
 		#Map.printCurrentMapWithTetrino(currentActiveTetrino)
 	
@@ -123,6 +143,8 @@ func rotateCurrentActiveTetrino():
 		
 	if (currentActiveTetrino.isCurrentMoveValid(Tetrino.TetrinoMoveType.R_CW)):
 		currentActiveTetrino.rotateCW()
+		dropPreviewTetrino.rotateCW()
+		print(currentActiveTetrino)
 		render()
 		#Map.printCurrentMapWithTetrino(currentActiveTetrino)
 	
@@ -134,6 +156,7 @@ func mergeCurrentTetrinoToMap():
 	for cur:Vector2i in currentActiveTetrino.geometry:
 		var position = currentActiveTetrino.center + cur
 		Map.mapGrid[position.y][position.x] = true
+	currentActiveTetrino.polygon.queue_free()
 	currentActiveTetrino.queue_free()
 	currentActiveTetrino = null
 	pass
@@ -155,7 +178,9 @@ func tetrinoButtThump():
 func keepPiece():
 	if (heldTetrino == null):
 		heldTetrino = currentActiveTetrino
-		currentActiveTetrino = TetrinoGenerator.generateRandomTetrino()
+		currentActiveTetrino = TetrinoGenerator.takeNextTetrino()
+		dropPreviewTetrino.polygon.queue_free()
+		dropPreviewTetrino = TetrinoGenerator.CloneDropTetrino(currentActiveTetrino)		
 		heldTetrino.center = Map.holdLocation
 	else:
 		var tmp = heldTetrino
@@ -163,11 +188,28 @@ func keepPiece():
 		currentActiveTetrino = tmp
 		currentActiveTetrino.center = heldTetrino.center
 		heldTetrino.center = Map.holdLocation
+		dropPreviewTetrino.polygon.queue_free()
+		dropPreviewTetrino = TetrinoGenerator.CloneDropTetrino(currentActiveTetrino)
 	render()
 	pass
 
 func render():
 	Map.drawMap()
 	Map.drawTetrino(currentActiveTetrino)
+	Map.drawPreviewTetrinos()
 	if heldTetrino != null:
 		Map.drawTetrino(heldTetrino)
+	drawCurrentScore()
+	drawDropPreview()
+		
+#Ryan
+#draws number of lines cleared
+func drawCurrentScore():
+	scorelabel.text = str("Score: " ,scoreAmount)
+	
+#draws a preview of where the tetrino is likely to land
+func drawDropPreview():
+	dropPreviewTetrino.center = currentActiveTetrino.center
+	while (!Map.didTetrinoHitBottom(dropPreviewTetrino)):
+		dropPreviewTetrino.center += Vector2i(0, 1)
+	Map.drawTetrino(dropPreviewTetrino)
